@@ -111,7 +111,13 @@ def _print_attr(prefix, obj, key, attr):
     if isinstance(attr, h5py.Reference):
         attr_str = 'Reference to %s' % obj.file[attr].name
     elif hasattr(attr, 'shape') and attr.shape > ():  # non-scalar attribute
-        attr_str = 'Attribute (shape: %s, dtype: %s)' % (str(attr.shape), str(attr.dtype))
+        if attr.dtype == H5_TEXT:
+            dtype = 'str'
+        elif attr.dtype == H5_BINARY:
+            dtype = 'bytes'
+        else:
+            dtype = str(attr.dtype)
+        attr_str = 'Attribute (shape: %s, dtype: %s)' % (str(attr.shape), dtype)
     elif isinstance(attr, (str, bytes)) and len(attr) > MAX_LEN_STR_PRINT:  # long string scalar
         attr_str = 'Attribute (shape: (), type: %s, length: %d)' % (str(type(attr)), len(attr))
     else:
