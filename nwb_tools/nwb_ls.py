@@ -2,6 +2,9 @@ import argparse
 import h5py
 import os
 
+# maximum length of a scalar string attribute to print
+MAX_LEN_STR_PRINT = 120
+
 
 def main():
     parser = argparse.ArgumentParser('python nwb_ls.py')
@@ -73,7 +76,15 @@ def _print_sub_obj(prefix, key, sub_obj):
     if isinstance(sub_obj, h5py.Group):
         obj_str = 'Group (%d members)' % len(sub_obj)
     elif isinstance(sub_obj, h5py.Dataset):
-        obj_str = 'Dataset (shape: %s, dtype: %s)' % (str(sub_obj.shape), str(sub_obj.dtype))
+        if sub_obj.shape == ():  # scalar dataset
+            value = sub_obj[()]
+            if not (isinstance(value, (str, bytes)) and len(value) > MAX_LEN_STR_PRINT):
+                # do not print value of long string scalar
+                obj_str = 'Dataset (value: %s, shape: %s, dtype: %s)' % (value, str(sub_obj.shape), str(sub_obj.dtype))
+            else:
+                obj_str = 'Dataset (shape: %s, dtype: %s)' % (str(sub_obj.shape), str(sub_obj.dtype))
+        else:
+            obj_str = 'Dataset (shape: %s, dtype: %s)' % (str(sub_obj.shape), str(sub_obj.dtype))
     else:
         obj_str = sub_obj
     print(prefix + '- ' + key + ':', obj_str)
@@ -83,6 +94,8 @@ def _print_attr(prefix, obj, key, attr):
     if isinstance(attr, h5py.Reference):
         attr_str = 'Reference to %s' % obj.file[attr].name
     elif hasattr(attr, 'shape') and attr.shape > ():  # non-scalar attribute
+        attr_str = 'Attribute (shape: %s, dtype: %s)' % (str(attr.shape), str(attr.dtype))
+    elif isinstance(attr, (str, bytes)) and len(attr) > MAX_LEN_STR_PRINT:  # long string scalar
         attr_str = 'Attribute (shape: %s, dtype: %s)' % (str(attr.shape), str(attr.dtype))
     else:
         attr_str = attr
