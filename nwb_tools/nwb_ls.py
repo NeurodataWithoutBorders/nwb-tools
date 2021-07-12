@@ -119,7 +119,7 @@ def _print_attr(prefix, obj, key, attr):
             dtype = str(attr.dtype)
         attr_str = 'Attribute (shape: %s, dtype: %s)' % (str(attr.shape), dtype)
     elif isinstance(attr, (str, bytes)) and len(attr) > MAX_LEN_STR_PRINT:  # long string scalar
-        attr_str = 'Attribute (shape: (), type: %s, length: %d)' % (type(attr).__name__), len(attr))
+        attr_str = 'Attribute (shape: (), type: %s, length: %d)' % (type(attr).__name__, len(attr))
     else:
         attr_str = attr
     print(prefix + '> ' + key + ':', attr_str)
