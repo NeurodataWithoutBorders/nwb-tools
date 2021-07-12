@@ -82,6 +82,8 @@ def _print_sub_obj(prefix, key, sub_obj):
 def _print_attr(prefix, obj, key, attr):
     if isinstance(attr, h5py.Reference):
         attr_str = 'Reference to %s' % obj.file[attr].name
+    elif hasattr(attr, 'shape') and attr.shape > ():  # non-scalar attribute
+        attr_str = 'Attribute (shape: %s, dtype: %s)' % (str(attr.shape), str(attr.dtype))
     else:
         attr_str = attr
     print(prefix + '> ' + key + ':', attr_str)
