@@ -5,6 +5,9 @@ import os
 # maximum length of a scalar string attribute to print
 MAX_LEN_STR_PRINT = 120
 
+H5_TEXT = h5py.special_dtype(vlen=str)
+H5_BINARY = h5py.special_dtype(vlen=bytes)
+
 
 def main():
     parser = argparse.ArgumentParser('python nwb_ls.py')
@@ -77,14 +80,28 @@ def _print_sub_obj(prefix, key, sub_obj):
         obj_str = 'Group (%d members)' % len(sub_obj)
     elif isinstance(sub_obj, h5py.Dataset):
         if sub_obj.shape == ():  # scalar dataset
-            dset_value = sub_obj[()]
+            if sub_obj.dtype == H5_TEXT:
+                dtype = 'str'
+                dset_value = sub_obj.asstr()[()]
+            elif sub_obj.dtype == H5_BINARY:
+                dtype = 'bytes'
+                dset_value = sub_obj[()]
+            else:
+                dtype = str(sub_obj.dtype)
+                dset_value = sub_obj[()]
             if not (isinstance(dset_value, (str, bytes)) and len(dset_value) > MAX_LEN_STR_PRINT):
                 # do not print value of long string scalar
-                obj_str = 'Dataset (shape: (), type: %s, value: %s)' % (type(sub_obj.dtype), dset_value)
+                obj_str = 'Dataset (shape: (), type: %s, value: %s)' % (dtype, dset_value)
             else:
-                obj_str = 'Dataset (shape: (), type: %s, length: %d)' % (type(dset_value), len(dset_value))
+                obj_str = 'Dataset (shape: (), type: %s, length: %d)' % (dtype, len(dset_value))
         else:
-            obj_str = 'Dataset (shape: %s, dtype: %s)' % (str(sub_obj.shape), str(sub_obj.dtype))
+            if sub_obj.dtype == H5_TEXT:
+                dtype = 'str'
+            elif sub_obj.dtype == H5_BINARY:
+                dtype = 'bytes'
+            else:
+                dtype = str(sub_obj.dtype)
+            obj_str = 'Dataset (shape: %s, dtype: %s)' % (str(sub_obj.shape), dtype)
     else:
         obj_str = sub_obj
     print(prefix + '- ' + key + ':', obj_str)
@@ -96,7 +113,7 @@ def _print_attr(prefix, obj, key, attr):
     elif hasattr(attr, 'shape') and attr.shape > ():  # non-scalar attribute
         attr_str = 'Attribute (shape: %s, dtype: %s)' % (str(attr.shape), str(attr.dtype))
     elif isinstance(attr, (str, bytes)) and len(attr) > MAX_LEN_STR_PRINT:  # long string scalar
-        attr_str = 'Attribute (shape: (), type: %s, length: %d)' % (type(attr), len(attr))
+        attr_str = 'Attribute (shape: (), type: %s, length: %d)' % (str(type(attr)), len(attr))
     else:
         attr_str = attr
     print(prefix + '> ' + key + ':', attr_str)
