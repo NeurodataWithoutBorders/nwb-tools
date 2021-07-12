@@ -96,7 +96,7 @@ def _print_attr(prefix, obj, key, attr):
     elif hasattr(attr, 'shape') and attr.shape > ():  # non-scalar attribute
         attr_str = 'Attribute (shape: %s, dtype: %s)' % (str(attr.shape), str(attr.dtype))
     elif isinstance(attr, (str, bytes)) and len(attr) > MAX_LEN_STR_PRINT:  # long string scalar
-        attr_str = 'Attribute (shape: %s, dtype: %s)' % (str(attr.shape), str(attr.dtype))
+        attr_str = 'Attribute (shape: (), type: %s)' % type(attr)
     else:
         attr_str = attr
     print(prefix + '> ' + key + ':', attr_str)
