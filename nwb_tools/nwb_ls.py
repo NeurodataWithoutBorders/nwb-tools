@@ -77,12 +77,14 @@ def _print_sub_obj(prefix, key, sub_obj):
         obj_str = 'Group (%d members)' % len(sub_obj)
     elif isinstance(sub_obj, h5py.Dataset):
         if sub_obj.shape == ():  # scalar dataset
-            value = sub_obj[()]
-            if not (isinstance(value, (str, bytes)) and len(value) > MAX_LEN_STR_PRINT):
+            dset_value = sub_obj[()]
+            if not (isinstance(dset_value, (str, bytes)) and len(dset_value) > MAX_LEN_STR_PRINT):
                 # do not print value of long string scalar
-                obj_str = 'Dataset (value: %s, shape: %s, dtype: %s)' % (value, str(sub_obj.shape), str(sub_obj.dtype))
+                obj_str = ('Dataset (value: %s, shape: %s, dtype: %s)' %
+                           (dset_value, str(sub_obj.shape), str(sub_obj.dtype)))
             else:
-                obj_str = 'Dataset (shape: %s, dtype: %s)' % (str(sub_obj.shape), str(sub_obj.dtype))
+                obj_str = ('Dataset (shape: %s, dtype: %s, length: %d)' %
+                           (str(sub_obj.shape), str(sub_obj.dtype), len(dset_value)))
         else:
             obj_str = 'Dataset (shape: %s, dtype: %s)' % (str(sub_obj.shape), str(sub_obj.dtype))
     else:
@@ -96,7 +98,7 @@ def _print_attr(prefix, obj, key, attr):
     elif hasattr(attr, 'shape') and attr.shape > ():  # non-scalar attribute
         attr_str = 'Attribute (shape: %s, dtype: %s)' % (str(attr.shape), str(attr.dtype))
     elif isinstance(attr, (str, bytes)) and len(attr) > MAX_LEN_STR_PRINT:  # long string scalar
-        attr_str = 'Attribute (shape: (), type: %s)' % type(attr)
+        attr_str = 'Attribute (shape: (), type: %s, length: %d)' % (type(attr), len(attr))
     else:
         attr_str = attr
     print(prefix + '> ' + key + ':', attr_str)
