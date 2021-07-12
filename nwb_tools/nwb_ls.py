@@ -80,11 +80,9 @@ def _print_sub_obj(prefix, key, sub_obj):
             dset_value = sub_obj[()]
             if not (isinstance(dset_value, (str, bytes)) and len(dset_value) > MAX_LEN_STR_PRINT):
                 # do not print value of long string scalar
-                obj_str = ('Dataset (value: %s, shape: %s, dtype: %s)' %
-                           (dset_value, str(sub_obj.shape), str(sub_obj.dtype)))
+                obj_str = 'Dataset (shape: (), type: %s, value: %s)' % (type(sub_obj.dtype), dset_value)
             else:
-                obj_str = ('Dataset (shape: %s, dtype: %s, length: %d)' %
-                           (str(sub_obj.shape), str(sub_obj.dtype), len(dset_value)))
+                obj_str = 'Dataset (shape: (), type: %s, length: %d)' % (type(dset_value), len(dset_value))
         else:
             obj_str = 'Dataset (shape: %s, dtype: %s)' % (str(sub_obj.shape), str(sub_obj.dtype))
     else:
