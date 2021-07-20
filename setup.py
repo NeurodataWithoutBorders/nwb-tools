@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'nwbls=nwb_tools.nwb_ls:main',
+            'nwbtrim=nwb_tools.nwb_trim:main'
         ]
     }
 )
