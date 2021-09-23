@@ -1,6 +1,6 @@
 # nwbtools
 
-These tools are NOT ready for production use.
+These tools are NOT ready for production use. There is no guarantee of support for these tools.
 
 ## nwbls
 Tool to print the contents of an NWB file
